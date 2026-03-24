@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.handler";
 import { sendUnauthorizedResponse } from "../utils/response.handler";
 
-export const authMiddleware = (
+export const authenticate = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -15,13 +15,23 @@ export const authMiddleware = (
     }
 
     const token = authHeader.split(" ")[1];
+    const decoded: any = verifyToken(token);
 
-    const decoded = verifyToken(token);
-
-    (req as any).user = decoded;
-
+    req.user = decoded;
     next();
   } catch (error) {
     return sendUnauthorizedResponse(res, "Invalid token");
   }
+};
+
+export const adminOnly = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user?.is_admin) {
+    return sendUnauthorizedResponse(res, "Admin only");
+  }
+
+  next();
 };

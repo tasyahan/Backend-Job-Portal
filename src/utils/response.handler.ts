@@ -1,14 +1,24 @@
 import { Response } from "express";
 
+const convertBigInt = (data: any): any => {
+  return JSON.parse(
+    JSON.stringify(data, (_, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+  );
+};
+
 export const sendSuccessResponse = (
   res: Response,
   data: any,
   message: string = "Success"
 ) => {
+  const safeData = convertBigInt(data);
+
   return res.status(200).json({
     success: true,
     message,
-    data,
+    data: safeData,
   });
 };
 

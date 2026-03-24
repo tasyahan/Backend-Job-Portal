@@ -6,6 +6,7 @@ import {
   sendSuccessNoDataResponse,
   sendUnauthorizedResponse,
   sendBadRequestResponse,
+  sendErrorResponse,
 } from "../utils/response.handler";
 import { comparePasswords } from "../utils/bcrypt.handler";
 import { generateToken } from "../utils/jwt.handler";
@@ -40,16 +41,14 @@ export const register = async (
     const data = result.data;
 
     const existingUser = await UserService.findUserByEmail(data.email);
-
     if (existingUser) {
       return sendBadRequestResponse(res, "Email already registered");
     }
 
     await UserService.createUser(data);
-
     return sendSuccessNoDataResponse(res, "Register success");
   } catch (error) {
-    next(error);
+    return sendErrorResponse(res, "Something went wrong", 500);
   }
 };
 
@@ -62,13 +61,11 @@ export const login = async (
     const { email, password } = req.body;
 
     const user = await UserService.findUserByEmail(email);
-
     if (!user) {
       return sendUnauthorizedResponse(res, "Invalid credentials");
     }
 
     const isMatch = await comparePasswords(password, user.password);
-
     if (!isMatch) {
       return sendUnauthorizedResponse(res, "Invalid credentials");
     }
@@ -81,13 +78,11 @@ export const login = async (
 
     return sendSuccessResponse(
       res,
-      {
-        token,
-      },
+      { token },
       "Login success"
     );
   } catch (error) {
-    next(error);
+    return sendErrorResponse(res, "Something went wrong", 500);
   }
 };
 
