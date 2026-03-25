@@ -34,7 +34,7 @@ export const getJobs = async (
       category: req.query.category,
       tag: req.query.tag,
       page: req.query.page ?? 1,
-      limit: req.query.limit ?? 10,
+      limit: req.query.limit ?? 6,
     };
 
     const result = await JobService.getJobs(query);

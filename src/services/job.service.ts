@@ -48,7 +48,7 @@ export const createJob = async (data: any, userId: number) => {
 };
 
 export const getJobs = async (query: any) => {
-  const { search, area, category, tag, page = 1, limit = 10 } = query;
+  const { search, area, category, tag, page = 1, limit = 6 } = query;
   const skip = (Number(page) - 1) * Number(limit);
 
   const where: any = {};
